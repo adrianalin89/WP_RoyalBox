@@ -1,4 +1,4 @@
-# WP_RoyalBox
+# WP_RoyalBox setup
 WordPress custom metabox factory
 
 #1. Add in function.php 
