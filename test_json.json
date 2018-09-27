@@ -1,0 +1,47 @@
+{
+    "screens" : "page",
+	"template" : "homepage-template.php",
+	"title"   : "Custom Royal Box Section -Testing-",
+	"context" : "normal",
+	"fields"  : {
+		"text_testing" : {
+			"label" : "The text field",
+			"type" : "text",
+			"placeholder" : "This is a placeholder text",
+			"width" : 50
+        },
+		"textarea_testing" : {
+			"label" : "The textarea field",
+			"type" : "textarea",
+			"rows" : 20,
+			"width" : 50
+        },
+		"select_testing" : {
+			"label" : "The select field",
+			"type" : "select",
+			"options" : {
+				"opt1" : "first option",
+				"opt2" : "secound option",
+				"opt3" : "asdasd",
+				"opt4" : "last opt"
+            }
+        },
+		"checkbox_testing" : {
+			"label" : "the checkbox field",
+			"type" : "checkbox",
+			"options" : {
+				"opt1" : "first option",
+				"opt2" : "secound option",
+				"opt3" : "asdasd",
+				"opt4" : "last opt"
+            }
+        },
+		"color_pik_testing" : {
+			"label" : "Color pik testing",
+			"value" : "#0f0f0f"
+        },
+		"file" : {
+			"label" : "testing file upload"
+        }
+    }
+}
