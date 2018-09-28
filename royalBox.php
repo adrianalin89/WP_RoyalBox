@@ -336,7 +336,10 @@ if (!class_exists('RoyalBox')) {
 			// DB UPDATE
 			foreach ($this->fields as $name => $data) {
 				if (isset($_POST[$name])) { 
-					 /* echo '<pre>'; print_r( $_POST ); wp_die( ); */
+					if(is_array($_POST[$name])) {
+						$_POST[$name] = implode('---', $_POST[$name]);
+					}
+					/* echo '<pre>'; print_r( $_POST ); wp_die(); */
 					update_post_meta($post_id, $name, sanitize_text_field($_POST[$name]));
 				}
 			}

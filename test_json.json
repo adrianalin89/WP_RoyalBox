@@ -35,10 +35,10 @@
 			"label" : "the checkbox field",
 			"type" : "checkbox",
 			"options" : {
-				"opt1" : "first option",
-				"opt2" : "secound option",
-				"opt3" : "asdasd",
-				"opt4" : "last opt"
+				"opt1" : "op1",
+				"opt2" : "op2",
+				"opt3" : "op3",
+				"opt4" : "op4"
             }
         },
 		"color_pik_testing" : {

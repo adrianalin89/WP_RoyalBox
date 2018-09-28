@@ -3,12 +3,12 @@
  * @deprecated @package royalBox.php 
  * @deprecated @version 1.0.0
  * 
- * @method text { placeholder }  @todo make a new option for email text / pass text
- * @method textarea { rows }   @todo add more textarea_arguments and fallbacks to default if null
- * @method select { value(opt) | options=>opt_value }  @see bug html gets mess up whit the return of the fallowing method metabox / cant understand way 
- * @method checkbox { value(opt) | options=>opt_value } @see bug multi check is not working / saving only last option as check
+ * @method text { placeholder } 
+ * @method textarea { rows }  
+ * @method select { value(opt) | options=>opt_value } 
+ * @method checkbox { value(opt) | options=>opt_value } 
  * @method color { value(opt) } 
- * @method file @see bug not loading image
+ * @method file @see bug if uploaded and delet uploaded agan get problem
  * 
  * @method @todo bulk sections
  * @method @todo time piker
@@ -150,8 +150,8 @@ if (class_exists('RoyalBox') && !is_object(RoyalBox::$create_field)) {
 						'type' => 'text', 
 						'id' => $id, 
 						'name' => $name, 
-				),
-				$options
+						$options
+				)
 			)
 		);
 	};
@@ -163,12 +163,14 @@ if (class_exists('RoyalBox') && !is_object(RoyalBox::$create_field)) {
 		$width = isset($data['width']) ? $data['width'] : '100';
 
 		$opt_valueue = isset($data['value']) ? $data['value'] : array();
+		$opt_valueue = explode('---',$opt_valueue[0]);
+		
 		$options = array();
 		$index = 0;
 		foreach ($data['options'] as $opt_name => $opt_value) {
-
+		
 			// create option field
-			$checkbox = array('input', 'type' => 'checkbox', 'name' => $name, 'id' => $name.$index);
+			$checkbox = array('input', 'type' => 'checkbox', 'name' => $name.'[]', 'id' => $name.$index);
 
 			// create label
 			$label    = array('label', 'for' => $name.$index, $opt_value);
@@ -286,6 +288,17 @@ if (class_exists('RoyalBox') && !is_object(RoyalBox::$create_field)) {
 					'class' => $name.'_btn button',
 					'value' => 'Upload',
 					'style' => 'display: block;'
+				),
+				array('img',
+						'class' => $name.'_img',
+						'src'   => '',
+						'style' => 'display: none;'
+				),
+				array('input',
+						'type'  => 'button',
+						'class' => $name.'_btn_remove button',
+						'value' => 'Remove',
+						'style' => 'display: none;'
 				)
 			)
 		); else $layout = array_merge(
@@ -299,7 +312,14 @@ if (class_exists('RoyalBox') && !is_object(RoyalBox::$create_field)) {
 						'class' => $name.'_btn_remove button',
 						'value' => 'Remove',
 						'style' => 'display: block;'
+				),
+				array('input',
+					'type'  => 'button',
+					'class' => $name.'_btn button',
+					'value' => 'Upload',
+					'style' => 'display: none;'
 				)
+
 			)
 		) ;
 		
@@ -342,12 +362,15 @@ if (class_exists('RoyalBox') && !is_object(RoyalBox::$create_field)) {
 							var media_attachment = meta_image_frame.state().get("selection").first().toJSON();
 
 							// Sends the attachment URL to our custom image input field.
-							$("#meta-image").val(media_attachment.url);
-
+							$("#'.$id.'").val(media_attachment.url);
+							$(".'.$name.'_img").attr("src",$("#'.$id.'").val()).show();
+							$(".'.$name.'_btn").css("display","none");
+							$(".'.$name.'_btn_remove").css("display","block");
+						
 						});
 
 						// Opens the media library frame.
-						wp.media.editor.open();
+						meta_image_frame.open();
 
 					}); //end upload
 
@@ -355,7 +378,9 @@ if (class_exists('RoyalBox') && !is_object(RoyalBox::$create_field)) {
 					$(".'.$name.'_btn_remove").click(function (e) {
 						e.preventDefault();
 						$("#'.$id.'").attr("value","");
-						$("#'.$name.'_img").attr("src","").hide();
+						$(".'.$name.'_img").attr("src","").hide();
+						$(".'.$name.'_btn").css("display","block");
+						$(".'.$name.'_btn_remove").css("display","none");
 						
 					}); //end remove
 
