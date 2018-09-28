@@ -5,15 +5,10 @@
  * 
  * @method text { placeholder }  @todo make a new option for email text / pass text
  * @method textarea { rows }   @todo add more textarea_arguments and fallbacks to default if null
- * 
- * need more love to this:
- * - set div+css wrapper
- * - add width option (+fallback)
- * - rebuild return for new generator version (+label)
- * @method select { value(opt) | options=>opt_value } 
- * @method checkbox { value(opt) | options=>opt_value } // bug not savings all checks
- * @method color { value(opt) }  // bug not showing color piker
- * @method file (need more js logic) // bug not showing brows button
+ * @method select { value(opt) | options=>opt_value }  @see bug html gets mess up whit the return of the fallowing method metabox / cant understand way 
+ * @method checkbox { value(opt) | options=>opt_value } @see bug multi check is not working / saving only last option as check
+ * @method color { value(opt) } 
+ * @method file @see bug not loading image
  * 
  * @method @todo bulk sections
  * @method @todo time piker
@@ -42,6 +37,9 @@ if (class_exists('RoyalBox') && !is_object(RoyalBox::$create_field)) {
 		if (isset($data['label'])) {
 			$_label = array(
 				'label', 'for' => $id,
+						 'style' => 'display: inline-block;
+						 			 margin-bottom: 5px;
+						 			 margin-left: 5px;',
 					array('strong', $data['label'])		
 			);
 		} else $_label = '';
@@ -49,12 +47,12 @@ if (class_exists('RoyalBox') && !is_object(RoyalBox::$create_field)) {
 		return array( 
 			array('div',
 				'style' =>	'width: calc('. $width . '% - 20px); 
-							float:left; 
+							display:inline-block; 
 							vertical-align: top;
 							margin: 0 10px;',
 				$_label,
 				array('input', 
-					'style' => 'width:100%',
+					'style' => 'width:100%;margin-bottom: 20px;',
 						'type' => 'text', 
 						'id' => $id, 
 						'name' => $name, 
@@ -74,7 +72,10 @@ if (class_exists('RoyalBox') && !is_object(RoyalBox::$create_field)) {
 		$label = @$data['label'];
 		if (isset($data['label'])) {
 			$_label = array(
-				'label', 'for' => 'wp-'.$name.'-wrap',
+				'label',
+				'style' => 'display: inline-block;
+							 margin-bottom: 5px;
+							 margin-left: 5px;',
 					array('strong', $data['label'])
 			);
 		} else $_label = '';
@@ -91,7 +92,7 @@ if (class_exists('RoyalBox') && !is_object(RoyalBox::$create_field)) {
 		return array(
 			array('div',
 			'style' =>	'width: calc('. $width . '% - 20px); 
-						float:left; 
+						display:inline-block; 
 						vertical-align: top;
 						margin: 0 10px;',
 			$_label,		
@@ -106,177 +107,261 @@ if (class_exists('RoyalBox') && !is_object(RoyalBox::$create_field)) {
 	// <select>
 	RoyalBox::$create_field->select = function ($name, $data) {
 		$id = $name.'_id';
-		$label = @$data['label'];
-		
-		// selected
-		$opt_valueue = count(@$data['value']) ? $data['value'][0] : ''; //@todo daca nu are optiuni declarate....
+		$width = isset($data['width']) ? $data['width'] : '100';
+		$opt_valueue = count(@$data['value']) ? $data['value'][0] : '';
 		$options = array();
-
 		foreach ($data['options'] as $opt_name => $opt_value) {
-			
 			$option = array('option', $opt_value);
 
-			// value attribute
+			// Transform name to value if name not array key for value
 			if (is_string($opt_name)) {
 				$option['value'] = $opt_name;
 			}
 
 			// set selected attribute
 			if ((is_string($opt_name) && $opt_name === $opt_valueue) || (!is_string($opt_name) && ($opt_name === $opt_valueue || $opt_value === $opt_valueue))) {
-				$option['selected'] = '';
+				$option['selected'] = ''; // this will render as selected checkbox in html generator
 			}
-
+			
 			// add to main option array
 			array_push($options, $option);
 		}
 
-		// wrapped options
-		$layout = array(
-			array('p',
-				array_merge(
-					array(
-						'select', 
+		$label = @$data['label'];
+		if (isset($data['label'])) {
+			$_label = array(
+				'label', 'for' => $id,
+				'style' => 'display: inline-block;
+							 margin-bottom: 5px;
+							 margin-left: 5px;',
+					array('strong', $data['label'])		
+			);
+		} else $_label = '';
+
+		return array( 
+			array('div',
+				'style' =>	'width: calc('. $width . '% - 20px); 
+							display:inline-block; 
+							vertical-align: top;
+							margin: 0 10px;',
+				$_label,
+				array('select', 
+					'style' => 'display:block;margin-bottom: 20px;',
+						'type' => 'text', 
 						'id' => $id, 
-						'name' => $name
-						), 
-					$options
-				)
+						'name' => $name, 
+				),
+				$options
 			)
 		);
-
-		// label
-		if (isset($data['label'])) {
-			array_unshift($layout, array('p',
-				array('label', 'for' => $id,
-					array('strong', $data['label'])
-				)
-			));
-		}
-
-		return $layout;
 	};
 
 	// <input type="checkbox">
 	RoyalBox::$create_field->checkbox = function ($name, $data) {
-		// cache id, label
 		$id = $name.'_id';
 		$label = @$data['label'];
-		// assign first value (even if blank) or blank
+		$width = isset($data['width']) ? $data['width'] : '100';
+
 		$opt_valueue = isset($data['value']) ? $data['value'] : array();
-		// initialize options collection, index
 		$options = array();
 		$index = 0;
-		// for each option
 		foreach ($data['options'] as $opt_name => $opt_value) {
+
 			// create option field
 			$checkbox = array('input', 'type' => 'checkbox', 'name' => $name, 'id' => $name.$index);
+
 			// create label
 			$label    = array('label', 'for' => $name.$index, $opt_value);
+
 			// set value attribute as option key or option value
 			$checkbox['value'] = is_string($opt_name) ? $opt_name : $opt_value;
+
 			// conditionally set checked attribute
 			if (in_array($opt_name, $opt_valueue, true) || in_array($opt_value, $opt_valueue, true)) {
 				$checkbox['checked'] = '';
 			}
+
 			// add to options collection
 			array_push($options, array('p', $checkbox, $label));
-			// advance index
 			++$index;
 		}
-		// create wrapped options collection
-		$layout = array(
-			array_merge(array('p'), $options)
-		);
 
-		// label
+		$label = @$data['label'];
 		if (isset($data['label'])) {
-			array_unshift($layout, array('p',
-				array('strong', $data['label'])
-			));
-		}
+			$_label = array(
+				'label', 
+				'style' => 'display: inline-block;
+							 margin-bottom: 5px;
+							 margin-left: 5px;',
+					array('strong', $data['label'])		
+			);
+		} else $_label = '';
+
+		$layout = array('div',
+						'style' =>	'width: calc('. $width . '% - 20px); 
+									display:inline-block; 
+									vertical-align: top;
+									margin: 0 10px;',
+						$_label
+				);
+		$layout= array( array_merge($layout, $options) );
 
 		return $layout;
 	};
-
+	
 	// <input type="color">
 	RoyalBox::$create_field->color = function ($name, $data) {
-		// cache id, label
 		$id = $name.'_id';
-		$label = @$data['label'];
-		// cache first value or blank
+		$width = isset($data['width']) ? $data['width'] : '100';
 		$opt_valueue = count(@$data['value']) ? $data['value'][0] : '';
-		// create wrapped text field
-		$layout = array(
-			array('p',
-				array('input', 'type' => 'color', 'id' => $id, 'name' => $name, 'value' => $opt_valueue),
-				array('script', 'jQuery(function($){$("#'.$id.'").wpColorPicker()})')
-			)
-		);
-
-		// label
+		$label = @$data['label'];
 		if (isset($data['label'])) {
-			array_unshift($layout, array('p',
-				array('label', 'for' => $id,
-					array('strong', $data['label'])
-				)
-			));
-		}
+			$_label = array(
+				'label', 
+				'style' => 'display: inline-block;
+							 margin-bottom: 5px;
+							 margin-left: 5px;',
+					array('strong', $data['label'])		
+			);
+		} else $_label = '';
+		
 		wp_enqueue_style('wp-color-picker');
 		wp_enqueue_script('wp-color-picker');
-		return $layout;
+
+		return array( 
+			array('div',
+				'style' =>	'width: calc('. $width . '% - 20px); 
+							display:inline-block; 
+							vertical-align: top;
+							margin: 0 10px;',
+				$_label,
+				array('input', 
+						'type' => 'color', 
+						'id' => $id, 
+						'name' => $name, 
+						'value' => $opt_valueue
+					),
+				array('script', 'jQuery(
+										function($){
+												$("#'.$id.'").wpColorPicker();
+											}
+										)'
+					)
+			)
+		);
 	};
 
 	// <input type="file">
 	RoyalBox::$create_field->file = function ($name, $data) {
-		// cache id, label
 		$id = $name.'_id';
+		$width = isset($data['width']) ? $data['width'] : '100';
 		$label = @$data['label'];
+		if (isset($data['label'])) {
+			$_label = array(
+				'label', 
+				'style' => 'display: inline-block;
+							 margin-bottom: 5px;
+							 margin-left: 5px;',
+					array('strong', $data['label'])		
+			);
+		} else $_label = '';
+
 		// cache first value or blank
 		$opt_valueue = count(@$data['value']) ? $data['value'][0] : '';
-		// create wrapped text field
-		$layout = array(
-			array('p',
-				array('input', 'type' => 'text', 'id' => $id, 'name' => $name, 'value' => $opt_valueue),
-				array('script', 'jQuery(function ($) {
+
+		wp_enqueue_style('wp-media-upload');
+		wp_enqueue_script('wp-media-upload');
+
+		$layout = array ('input',
+				'type'  => 'hidden',
+				'name'  => $name,
+				'id' 	=> $id,
+				'value' => $opt_valueue,
+		);
+
+		if ( '' == $opt_valueue ) $layout = array_merge(
+			$layout, array( 
+				array('input',
+					'type'  => 'button',
+					'class' => $name.'_btn button',
+					'value' => 'Upload',
+					'style' => 'display: block;'
+				)
+			)
+		); else $layout = array_merge(
+			$layout, array(
+				array('img',
+						'class' => $name.'_img',
+						'src'   => $opt_valueue,
+				),
+				array('input',
+						'type'  => 'button',
+						'class' => $name.'_btn_remove button',
+						'value' => 'Remove',
+						'style' => 'display: block;'
+				)
+			)
+		) ;
+		
+
+
+
+		return array( 
+			array('div',
+				'style' =>	'width: calc('. $width . '% - 20px); 
+							display:inline-block; 
+							vertical-align: top;
+							margin: 0 10px;',
+				$_label,
+				$layout,
+				array('script', 
+				'jQuery(function ($) {
+
 					var meta_image_frame;
-					$("#'.$id.'").click(function (e) {
+
+					$(".'.$name.'_btn").click(function (e) {
 						e.preventDefault();
+
 						// If the frame already exists, re-open it.
 						if ( meta_image_frame ) {
 							wp.media.editor.open();
 							return;
 						}
+
 						// Sets up the media library frame
 						meta_image_frame = wp.media.frames.meta_image_frame = wp.media({
-							title: meta_image.title,
-							button: { text:  meta_image.button },
+							title: "test",
+							button: { text:  "load" },
 							library: { type: "image" }
 						});
+
 						// Runs when an image is selected.
 						meta_image_frame.on("select", function () {
+
 							// Grabs the attachment selection and creates a JSON representation of the model.
 							var media_attachment = meta_image_frame.state().get("selection").first().toJSON();
+
 							// Sends the attachment URL to our custom image input field.
 							$("#meta-image").val(media_attachment.url);
+
 						});
+
 						// Opens the media library frame.
 						wp.media.editor.open();
-					});
-				});')
+
+					}); //end upload
+
+
+					$(".'.$name.'_btn_remove").click(function (e) {
+						e.preventDefault();
+						$("#'.$id.'").attr("value","");
+						$("#'.$name.'_img").attr("src","").hide();
+						
+					}); //end remove
+
+				}); '
+				)
 			)
 		);
-
-		// label
-		if (isset($data['label'])) {
-			array_unshift($layout, array('p',
-				array('label', 'for' => $id,
-					array('strong', $data['label'])
-				)
-			));
-		}
-		wp_enqueue_style('wp-media-upload');
-		wp_enqueue_script('wp-media-upload');
-
-		return $layout;
 	};
-}
+}	 

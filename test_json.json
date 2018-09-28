@@ -7,13 +7,18 @@
 		"text_testing" : {
 			"label" : "The text field",
 			"type" : "text",
-			"placeholder" : "This is a placeholder text",
-			"width" : 50
+			"placeholder" : "This is a placeholder text"
         },
 		"textarea_testing" : {
 			"label" : "The textarea field",
 			"type" : "textarea",
-			"rows" : 20,
+			"rows" : 10,
+			"width" : 50
+		},
+		"textarea_testing2" : {
+			"label" : "The textarea field2",
+			"type" : "textarea",
+			"rows" : 15,
 			"width" : 50
         },
 		"select_testing" : {
@@ -37,11 +42,13 @@
             }
         },
 		"color_pik_testing" : {
+			"type" : "color",
 			"label" : "Color pik testing",
 			"value" : "#0f0f0f"
         },
 		"file" : {
-			"label" : "testing file upload"
+			"type" : "file",
+			"label" : "testing file upload2"
         }
     }
 }
