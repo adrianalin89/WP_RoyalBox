@@ -12,9 +12,6 @@
  * @method $create_field can create new fields and use them. 
  * 
  * @todo Fix revision fields and limit save revision to 5
- * @todo check in rbf_pre_post_update if we save for the corect post page postype template
- * 
- * @todo add a group field functionality
  * **/
 
 if (!class_exists('RoyalBox')) {
@@ -62,15 +59,22 @@ if (!class_exists('RoyalBox')) {
 				if (is_array($opts['template'])) {	call_user_func_array(array($this, 'add_template'), $opts['template']); }
 			}
 
-			/**
-			 * @todo $this->bundle = array();
-			 */
+			//--> Group
+			$this->group  = array();
+			if (isset($opts['group']) && is_array($opts['group'])) {
+			/* 	print_r( $opts['group'] ); die; */
+				$index = 1;
+				foreach ($opts['group'] as  $fields_set ) { 
+					$this->add_group_field($fields_set,$index); 
+					$index++;
+				}
+			}
 
 			 //--> FILDURILE
 			$this->fields  = array();
 			if (isset($opts['fields']) && is_array($opts['fields'])) {
 				foreach ($opts['fields'] as $name => $field) {
-					$this->add_field($name, $field); // incarcam in arrayul filds [$name] => $field
+					$this->add_field($name, $field); 
 				}
 			}
 
@@ -137,7 +141,23 @@ if (!class_exists('RoyalBox')) {
 		public function has_template($template = null) {
 			return in_array($template, $this->template, true);
 		}
-		
+
+		// GROUP FUNCTION
+		public function add_group_field($fields_data = array(), $index) {
+			
+			if (is_array($fields_data)) {
+						$this->group['field_set'.$index] = $fields_data;  
+			} 
+			
+			
+			elseif (is_string($fields)) { 
+				$this->group[$fields] = $fields_data;
+			}
+			
+
+			return $this;
+		}
+
 		// FIELDS FUNCTION
 		public function add_field($nameOrFields = 'sample', $data = array()) {
 			if (is_array($nameOrFields)) {
@@ -185,12 +205,44 @@ if (!class_exists('RoyalBox')) {
 		function rbf_render_royal_box($post) {
 			wp_nonce_field('rbf_meta_box', 'rbf_meta_box_nonce');
 			$buffer = ''; // html buffer
-			foreach ($this->fields as $name => $data) { 
+			
+			if($this->group) { // arrayul unui singur fields set in care regasit alt array cu field id si in care gasit data pt fiecare metabox.
 
 				/**
-				 * @todo un if dupa tagul bundle si daca e aici voi genera htmul si acelasi lucru inainte sa inchid foreacul
+				 * @todo GROUP SECTION
 				 */
-				
+
+				 $buffer .=  '<h2><span>GROUP title </span> <input type="button" value="add +"></h2>';
+				 $buffer .=  '<div class="group_rb_container">';
+
+				 //add a group header
+				 //add a add buton in haddder
+				 // make a loop using javascrip
+ 				foreach ($this->group as $field_id ){
+					foreach ($field_id as $name => $data) { 
+					/* 	print_r($this->group);die; */
+						$func = isset($data['type']) ? @self::$create_field->{$data['type']} : self::$create_field->text; // daca exista in array type atunci generam arrayul ce corespunde acelui type
+						
+						if ($func) {  // daca avem un obiect
+							if (count(get_post_meta($post->ID, $name))) { //verificam bd
+								$data['value'] = get_post_meta($post->ID, $name); //incarcam din bd pt a completa valorile salvate in fild-uri
+							} else if (!isset($data['value'])) { //verificam daca exista json
+								$data['value'] = array();  // sanitizam 
+							} else { // incaracam din json in functie de tip
+								$data['value'] = is_array($data['value']) ? $data['value'] : array($data['value']);
+							}
+								
+							$layout = $func($name, $data);  
+							$buffer .= is_string($layout) ? $layout : forward_static_call_array(array('RoyalBox', 'create_element'), $layout); // trimite cate un metabox spre generare k si array de mai multe taguri, atribute si text
+						} 
+					}
+				}
+				$buffer .=  '</div>';
+
+			}
+
+			foreach ($this->fields as $name => $data) { 
+
 				$func = isset($data['type']) ? @self::$create_field->{$data['type']} : self::$create_field->text; // daca exista in array type atunci generam arrayul ce corespunde acelui type
 				
 				if ($func) {  // daca avem un obiect
@@ -296,12 +348,12 @@ if (!class_exists('RoyalBox')) {
 			return get_metadata( 'post', $post_id, $field, true );
 		}
 
-		function race_restore_revision( $post_id, $revision_id ) {
-
+		function rbf_restore_revision( $post_id, $revision_id ) {
 			$revision = get_post( $revision_id );
+			$keyArray= array();
+			foreach( $this->fields as $key => $val ) $keyArray = array_push($keyArray,$key);
 			
-			foreach ($this->fields as $name => $data) {
-				
+			foreach ($keyArray as $name => $data) {
 				$rest_elem_data  = get_metadata( 'post', $revision->ID, $name, true );
 				if ( !$rest_elem_data )
 					delete_post_meta( $post_id, $rest_elem_name );
@@ -328,10 +380,6 @@ if (!class_exists('RoyalBox')) {
 			if (!current_user_can(isset($_POST['post_type']) && $_POST['post_type'] === 'page' ? 'edit_page' : 'edit_post', $post_id)) {
 				return;
 			}
-
-			/**
-			 * @todo sa verific si daca este templetul/post type/page/post inainte sa salvez
-			 */
 
 			// DB UPDATE
 			foreach ($this->fields as $name => $data) {

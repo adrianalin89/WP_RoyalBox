@@ -3,11 +3,61 @@
 	"template" : "homepage-template.php",
 	"title"   : "Custom Royal Box Section -Testing-",
 	"context" : "normal",
+	"group":{
+		"group_title"   : "Custom greoup 1",
+		"width" : 50,
+		"fields":{
+			"test_id1"	:{
+				"label" : "The text",
+				"type" : "text",
+				"placeholder" : "This is a placeholder text"
+			},
+			"select_id1" : {
+				"label" : "The select field",
+				"type" : "select",
+				"options" : {
+					"opt1" : "first option",
+					"opt2" : "secound option",
+					"opt3" : "asdasd",
+					"opt4" : "last opt"
+				}
+			}
+		}
+	},
+	"group":{
+		"group_title"   : "Custom greoup 2",
+		"width" : 50,
+		"fields":{
+			"test_id2"	:{
+				"label" : "The text",
+				"type" : "text",
+				"placeholder" : "This is a placeholder text"
+			},
+			"select_id2" : {
+				"label" : "The select field",
+				"type" : "select",
+				"options" : {
+					"opt1" : "first option",
+					"opt2" : "secound option",
+					"opt3" : "asdasd",
+					"opt4" : "last opt"
+				}
+			}
+		}
+	},
 	"fields"  : {
 		"text_testing" : {
 			"label" : "The text field",
 			"type" : "text",
 			"placeholder" : "This is a placeholder text"
+		},
+		"date_piker" : {
+			"label" : "Date Piker",
+			"type" : "date"
+		},
+		"time_piker" : {
+			"label" : "Time Piker",
+			"type" : "time"
         },
 		"textarea_testing" : {
 			"label" : "The textarea field",
@@ -40,6 +90,16 @@
 				"opt3" : "op3",
 				"opt4" : "op4"
             }
+		},
+		"radio_testing" : {
+			"label" : "the radio field",
+			"type" : "radio",
+			"options" : {
+				"opt1" : "op1",
+				"opt2" : "op2",
+				"opt3" : "op3",
+				"opt4" : "op4"
+            }
         },
 		"color_pik_testing" : {
 			"type" : "color",
@@ -48,7 +108,27 @@
         },
 		"file" : {
 			"type" : "file",
-			"label" : "testing file upload2"
-        }
+			"label" : "testing file upload"
+		},
+		"gallery_test" : {
+			"type" : "gallery",
+			"label" : "testing gallery upload"
+		},
+		"select_post" : {
+			"label" : "Select post",
+			"type" : "selectpost"
+           
+		},
+		"select_page" : {
+			"label" : "Select page",
+			"type" : "selectpost",
+			"post_type" : "page"
+            
+		},
+		"embed_test" : {
+			"label" : "The text field oEmbed",
+			"type" : "embed",
+			"placeholder" : "drop the link"
+		}
     }
 }
