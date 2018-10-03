@@ -26,7 +26,6 @@ if (class_exists('RoyalBox') && !is_object(RoyalBox::$create_field)) {
 		$id = $name.'_id';
 		$placeholder = @$data['placeholder'];
 		$width = isset($data['width']) ? $data['width'] : '100';
-	/* 	var_dump( $data );die(); */
 		$opt_valueue = count(@$data['value']) ? $data['value'][0] : '';
 		$label = @$data['label'];
 		if (isset($data['label'])) {

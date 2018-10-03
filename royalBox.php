@@ -62,11 +62,12 @@ if (!class_exists('RoyalBox')) {
 			//--> Group
 			$this->group  = array();
 			if (isset($opts['group']) && is_array($opts['group'])) {
-			/* 	print_r( $opts['group'] ); die; */
-				$index = 1;
+				
+				/* print_r( $fields_set ); die; */
+				$i=1;
 				foreach ($opts['group'] as  $fields_set ) { 
-					$this->add_group_field($fields_set,$index); 
-					$index++;
+					$this->add_group_field($fields_set,$i++); 
+					
 				}
 			}
 
@@ -143,18 +144,10 @@ if (!class_exists('RoyalBox')) {
 		}
 
 		// GROUP FUNCTION
-		public function add_group_field($fields_data = array(), $index) {
-			
+		public function add_group_field($fields_data = array(),$i) {
 			if (is_array($fields_data)) {
-						$this->group['field_set'.$index] = $fields_data;  
+						$this->group[$i] = $fields_data;  
 			} 
-			
-			
-			elseif (is_string($fields)) { 
-				$this->group[$fields] = $fields_data;
-			}
-			
-
 			return $this;
 		}
 
@@ -211,16 +204,18 @@ if (!class_exists('RoyalBox')) {
 				/**
 				 * @todo GROUP SECTION
 				 */
+				$add_rb = 1; // un increment pt id-ul butonului de add al fiecarui grup
+				foreach ($this->group as $field_id ){
 
-				 $buffer .=  '<h2><span>GROUP title </span> <input type="button" value="add +"></h2>';
-				 $buffer .=  '<div class="group_rb_container">';
+					$buffer .=  '<h2><span>'. $field_id['group_title'] .'</span> <input class="add_rb" id="add_rb_"'.$add_rb++.' type="button" value="add +"></h2>';
+					$buffer .=  '<div class="group_rb_container">';
+					
+					$add_to_id=1; // incrementeaza idurile fildurilor pt a le salva in bd cand vor fi dublicate
+				
+					foreach ($field_id['fields'] as $field_id => $data) { 
 
-				 //add a group header
-				 //add a add buton in haddder
-				 // make a loop using javascrip
- 				foreach ($this->group as $field_id ){
-					foreach ($field_id as $name => $data) { 
-					/* 	print_r($this->group);die; */
+						$name = $field_id . $add_to_id;
+
 						$func = isset($data['type']) ? @self::$create_field->{$data['type']} : self::$create_field->text; // daca exista in array type atunci generam arrayul ce corespunde acelui type
 						
 						if ($func) {  // daca avem un obiect
@@ -235,9 +230,38 @@ if (!class_exists('RoyalBox')) {
 							$layout = $func($name, $data);  
 							$buffer .= is_string($layout) ? $layout : forward_static_call_array(array('RoyalBox', 'create_element'), $layout); // trimite cate un metabox spre generare k si array de mai multe taguri, atribute si text
 						} 
+
+
 					}
+					// #todo buton call function via ajax add parameters and capture response. Also build the function.
+					?> 
+					<script>
+	/* 					jQuery(function ($) {
+							$("body").on("click", ".add_rb", function(e) { 
+								e.preventDefault();
+
+								$.ajax({ url: 'royalBox.php',
+									data: {reGenRB: 'rbf_re_render_royal_box', 
+												// trebuie sa pasez in functie parametri php
+												//$post,  
+												//$field_id['fields'],  
+												//$add_to_id++
+											},
+									type: 'post',
+									success: function(return_string) {
+												// trebuie sa incarc din js in php un string
+												// $buffer .=  return_string; 
+									}
+								});
+							}
+						}); */
+					</script>
+					<?php
+
+					
+					$buffer .=  '</div>';
+
 				}
-				$buffer .=  '</div>';
 
 			}
 

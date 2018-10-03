@@ -3,44 +3,46 @@
 	"template" : "homepage-template.php",
 	"title"   : "Custom Royal Box Section -Testing-",
 	"context" : "normal",
-	"group":{
-		"group_title"   : "Custom greoup 1",
-		"width" : 50,
-		"fields":{
-			"test_id1"	:{
-				"label" : "The text",
-				"type" : "text",
-				"placeholder" : "This is a placeholder text"
-			},
-			"select_id1" : {
-				"label" : "The select field",
-				"type" : "select",
-				"options" : {
-					"opt1" : "first option",
-					"opt2" : "secound option",
-					"opt3" : "asdasd",
-					"opt4" : "last opt"
+	"group":{ 
+		"Custom group 1":{
+			"group_title"   : "Custom greoup 1",
+			"width" : 50,
+			"fields":{
+				"test_id1"	:{
+					"label" : "The text1",
+					"type" : "text",
+					"placeholder" : "This is a placeholder text"
+				},
+				"select_id1" : {
+					"label" : "The select field",
+					"type" : "select",
+					"options" : {
+						"opt1" : "first option",
+						"opt2" : "secound option",
+						"opt3" : "asdasd",
+						"opt4" : "last opt"
+					}
 				}
 			}
-		}
-	},
-	"group":{
-		"group_title"   : "Custom greoup 2",
-		"width" : 50,
-		"fields":{
-			"test_id2"	:{
-				"label" : "The text",
-				"type" : "text",
-				"placeholder" : "This is a placeholder text"
-			},
-			"select_id2" : {
-				"label" : "The select field",
-				"type" : "select",
-				"options" : {
-					"opt1" : "first option",
-					"opt2" : "secound option",
-					"opt3" : "asdasd",
-					"opt4" : "last opt"
+		},
+		"Custom group 2":{
+			"group_title"   : "Custom greoup 2",
+			"width" : 50,
+			"fields":{
+				"test_id2"	:{
+					"label" : "The text2",
+					"type" : "text",
+					"placeholder" : "This is a placeholder text"
+				},
+				"select_id2" : {
+					"label" : "The select field2",
+					"type" : "select",
+					"options" : {
+						"opt1" : "first option",
+						"opt2" : "secound option",
+						"opt3" : "asdasd",
+						"opt4" : "last opt"
+					}
 				}
 			}
 		}
